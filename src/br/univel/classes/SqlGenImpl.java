@@ -140,8 +140,63 @@ public class SqlGenImpl extends SqlGen {
 
 	@Override
 	protected PreparedStatement getSqlInsert(Connection con, Object obj) {
-		// TODO Auto-generated method stub
+		Class<? extends Object> cl = obj.getClass();
+
+		StringBuilder sb = new StringBuilder();
+
+		//nome da tabela
+		String nomeTabela;
+		if (cl.isAnnotationPresent(Tabela.class)) {
+			Tabela anotacaoTabela = cl.getAnnotation(Tabela.class);
+			nomeTabela = anotacaoTabela.value();
+
+		} else {
+			nomeTabela = cl.getSimpleName().toUpperCase();
+		}
+		sb.append("INSERT INTO ").append(nomeTabela).append(" (");
+
+		Field[] atributos = cl.getDeclaredFields();
+
+		// nome dos campos
+		for (int i = 0; i < atributos.length; i++) {
+
+			Field field = atributos[i];
+
+			String nomeColuna;
+
+			if (field.isAnnotationPresent(Coluna.class)) {
+				Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
+
+				if (anotacaoColuna.nome().isEmpty()) {
+					nomeColuna = field.getName().toUpperCase();
+				} else {
+					nomeColuna = anotacaoColuna.nome();
+				}
+
+			} else {
+				nomeColuna = field.getName().toUpperCase();
+			}
+
+			if (i > 0) {
+				sb.append(", ");
+			}
+
+			sb.append(nomeColuna);
+		}
+
+		sb.append(") VALUES (");
+
+		for (int i = 0; i < atributos.length; i++) {
+			if (i > 0) {
+				sb.append(", ");
+			}
+			sb.append('?');
+		}
+		sb.append(')');
+
+		System.out.println(sb.toString());
 		return null;
+
 	}
 
 	@Override
@@ -222,7 +277,52 @@ public class SqlGenImpl extends SqlGen {
 
 	@Override
 	protected PreparedStatement getSqlUpdateById(Connection con, Object obj) {
-		// TODO Auto-generated method stub
+		Class<? extends Object> cl = obj.getClass();
+
+		StringBuilder sb = new StringBuilder();
+
+		//nome da tabela
+		String nomeTabela;
+		if (cl.isAnnotationPresent(Tabela.class)) {
+			Tabela anotacaoTabela = cl.getAnnotation(Tabela.class);
+			nomeTabela = anotacaoTabela.value();
+
+		} else {
+			nomeTabela = cl.getSimpleName().toUpperCase();
+		}
+		sb.append("UPDATE ").append(nomeTabela).append(" SET \n");
+
+		Field[] atributos = cl.getDeclaredFields();
+
+		// nome dos campos
+		for (int i = 0; i < atributos.length; i++) {
+
+			Field field = atributos[i];
+
+			String nomeColuna;
+
+			if (field.isAnnotationPresent(Coluna.class)) {
+				Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
+
+				if (anotacaoColuna.nome().isEmpty()) {
+					nomeColuna = field.getName().toUpperCase();
+				} else {
+					nomeColuna = anotacaoColuna.nome();
+				}
+
+			} else {
+				nomeColuna = field.getName().toUpperCase();
+			}
+
+			if (i > 0) {
+				sb.append(", \n");
+			}
+
+			sb.append(nomeColuna).append(" = ?");
+		}
+
+
+		System.out.println(sb.toString());
 		return null;
 	}
 
