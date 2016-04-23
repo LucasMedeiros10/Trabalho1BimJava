@@ -103,6 +103,8 @@ public class SqlGenImpl extends SqlGen {
 			}
 			
 			sb.append("\n);");
+			
+			System.out.println(sb.toString());			
 			return sb.toString();
 
 		} catch (SecurityException e) {
@@ -129,6 +131,7 @@ public class SqlGenImpl extends SqlGen {
 			}
 			sb.append("DROP TABLE ").append(nomeTabela).append(";");
 
+			System.out.println(sb.toString());
 			return sb.toString();
 		}catch(SecurityException e){
 			throw new RuntimeException(e);
@@ -143,14 +146,78 @@ public class SqlGenImpl extends SqlGen {
 
 	@Override
 	protected PreparedStatement getSqlSelectAll(Connection con, Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+			StringBuilder sb = new StringBuilder();
+			
+			// Declaração da tabela.
+			String nomeTabela;
+			if (obj.getClass().isAnnotationPresent(Tabela.class)) {
+	
+				Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
+				nomeTabela = anotacaoTabela.value();
+	
+			} else {
+				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
+	
+			}
+			sb.append("SELECT * FROM ").append(nomeTabela);
+	
+			System.out.println(sb.toString());
+			return null;			
+		
+		}catch(SecurityException e){
+			throw new RuntimeException(e);
+		}						
+
 	}
 
 	@Override
 	protected PreparedStatement getSqlSelectById(Connection con, Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+			StringBuilder sb = new StringBuilder();
+			
+			// Declaração da tabela.
+			String nomeTabela;
+			if (obj.getClass().isAnnotationPresent(Tabela.class)) {
+	
+				Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
+				nomeTabela = anotacaoTabela.value();
+	
+			} else {
+				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
+	
+			}			
+
+			//pega o campo id
+			Field[] atributos = obj.getClass().getDeclaredFields();			
+			String ChavePrimaria = "";
+			for (int i = 0; i < atributos.length; i++) {
+
+				Field field = atributos[i];
+
+				//nome coluna
+				if (field.isAnnotationPresent(Coluna.class)) {
+					Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
+					
+					//verifica se é chave primária
+					if(anotacaoColuna.pk()){
+						if (ChavePrimaria.equalsIgnoreCase("")){
+							ChavePrimaria = anotacaoColuna.nome();
+						}else{
+							ChavePrimaria = ChavePrimaria + ", " + anotacaoColuna.nome();
+						}							
+					}
+				}
+			}
+			
+			sb.append("SELECT * FROM ").append(nomeTabela).append(" WHERE ").append(ChavePrimaria).append(" = ?");
+	
+			System.out.println(sb.toString());
+			return null;			
+		
+		}catch(SecurityException e){
+			throw new RuntimeException(e);
+		}	
 	}
 
 	@Override
@@ -161,8 +228,52 @@ public class SqlGenImpl extends SqlGen {
 
 	@Override
 	protected PreparedStatement getSqlDeleteById(Connection con, Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+			StringBuilder sb = new StringBuilder();
+			
+			// Declaração da tabela.
+			String nomeTabela;
+			if (obj.getClass().isAnnotationPresent(Tabela.class)) {
+	
+				Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
+				nomeTabela = anotacaoTabela.value();
+	
+			} else {
+				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
+			}
+			
+			
+			//pega o campo id
+			Field[] atributos = obj.getClass().getDeclaredFields();			
+			String ChavePrimaria = "";
+			for (int i = 0; i < atributos.length; i++) {
+
+				Field field = atributos[i];
+
+				//nome coluna
+				if (field.isAnnotationPresent(Coluna.class)) {
+					Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
+					
+					//verifica se é chave primária
+					if(anotacaoColuna.pk()){
+						if (ChavePrimaria.equalsIgnoreCase("")){
+							ChavePrimaria = anotacaoColuna.nome();
+						}else{
+							ChavePrimaria = ChavePrimaria + ", " + anotacaoColuna.nome();
+						}							
+					}
+				}
+			}
+			
+			sb.append("DELETE FROM ").append(nomeTabela).append(" WHERE ").append(ChavePrimaria).append(" = ?");
+	
+			System.out.println(sb.toString());
+			return null;			
+		
+		}catch(SecurityException e){
+			throw new RuntimeException(e);
+		}				
+
 	}
 
 }
