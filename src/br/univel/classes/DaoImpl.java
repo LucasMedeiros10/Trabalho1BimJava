@@ -1,11 +1,14 @@
 package br.univel.classes;
 
+import java.sql.Connection;
 import java.util.List;
 
 import br.univel.interfaceseClassesAbstratas.Dao;
 
 public class DaoImpl implements Dao<Cliente, Integer> {
 
+
+	Connection con = new Conexao();
 	
 	@Override
 	public void salvar(Cliente t) {
@@ -18,6 +21,7 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	public Cliente buscar(Integer k) {
 		SqlGenImpl gerador = new SqlGenImpl();
 		gerador.getSqlSelectById(con, new Cliente());
+		return null;
 	}
 
 	@Override
@@ -36,6 +40,7 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	public List<Cliente> listarTodos() {
 		SqlGenImpl gerador = new SqlGenImpl();
 		gerador.getSqlSelectAll(con, new Cliente());
+		return null;
 	}
 
 	public void criarTabela(Cliente t){

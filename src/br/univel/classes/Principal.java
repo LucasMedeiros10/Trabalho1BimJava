@@ -4,9 +4,7 @@ import br.univel.enums.EstadoCivil;
 
 public class Principal {
 
-	
-	public static void main(String[] args) {
-		
+	public Principal(){
 		//instancia dos clientes
 		Cliente c1 = new Cliente();
 		c1.setId(1);
@@ -62,6 +60,12 @@ public class Principal {
 		d.excluir(c3.getId());
 		
 		System.out.println("listarTodos");
-		d.listarTodos();
+		d.listarTodos();		
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		new Principal();
 	}
 }
