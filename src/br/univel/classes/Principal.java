@@ -7,6 +7,7 @@ public class Principal {
 	
 	public static void main(String[] args) {
 		
+		//instancia dos clientes
 		Cliente c1 = new Cliente();
 		c1.setId(1);
 		c1.setNome("Lucas");
@@ -28,18 +29,37 @@ public class Principal {
 		c3.setEstadoCivil(EstadoCivil.SOLTEIRO);
 		c3.setEndereco("Rua das Araras, 56");
 		
+		//instancia Dao
+		DaoImpl d = new DaoImpl();
 		
 		
 		System.out.println("apagarTabela");
-		System.out.println("criarTabela");
-		System.out.println("inserir objeto 1");
-		System.out.println("inserir objeto 2");
-		System.out.println("inserir objeto 3");
-		System.out.println("listarTodos");
-		System.out.println("buscar objeto 1");
-		System.out.println("alterar objeto 2");
-		System.out.println("excluir objeto 3");
-		System.out.println("listarTodos");
 		
+		System.out.println("criarTabela");
+		
+		
+		System.out.println("inserir objeto 1");
+		d.salvar(c1);
+		
+		System.out.println("inserir objeto 2");
+		d.salvar(c2);
+		
+		System.out.println("inserir objeto 3");
+		d.salvar(c3);
+		
+		System.out.println("listarTodos");
+		d.listarTodos();
+		
+		System.out.println("buscar objeto 1");
+		d.buscar(c1.getId());
+		
+		System.out.println("alterar objeto 2");
+		d.atualizar(c2);
+		
+		System.out.println("excluir objeto 3");
+		d.excluir(c3.getId());
+		
+		System.out.println("listarTodos");
+		d.listarTodos();
 	}
 }
