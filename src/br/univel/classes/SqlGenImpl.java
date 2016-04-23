@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import javax.management.RuntimeErrorException;
+
 import br.univel.anotacoes.Coluna;
 import br.univel.anotacoes.Tabela;
 import br.univel.enums.EstadoCivil;
@@ -86,24 +88,21 @@ public class SqlGenImpl extends SqlGen {
 						tipoColuna = "INT";
 					} else {
 						tipoColuna = "DESCONHECIDO";
-					}
-							
+					}							
 					
 					if (i > 0) {
 						sb.append(",");
-					}
-										
+					}										
 
 					sb.append("\n\t").append(nomeColuna).append(' ').append(tipoColuna);
 				}
 			}			
 
 			if (ChavePrimaria != ""){
-				sb.append("\n\t PRYMARY KEY(" + ChavePrimaria + ")");
+				sb.append(",\n\t PRIMARY KEY(" + ChavePrimaria + ")");
 			}
 			
 			sb.append("\n);");
-			System.out.println(sb.toString());
 			return sb.toString();
 
 		} catch (SecurityException e) {
@@ -113,8 +112,27 @@ public class SqlGenImpl extends SqlGen {
 
 	@Override
 	protected String getDropTable(Connection con, Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+
+			StringBuilder sb = new StringBuilder();
+			
+			// Declaração da tabela.
+			String nomeTabela;
+			if (obj.getClass().isAnnotationPresent(Tabela.class)) {
+
+				Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
+				nomeTabela = anotacaoTabela.value();
+
+			} else {
+				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
+
+			}
+			sb.append("DROP TABLE ").append(nomeTabela).append(";");
+
+			return sb.toString();
+		}catch(SecurityException e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
