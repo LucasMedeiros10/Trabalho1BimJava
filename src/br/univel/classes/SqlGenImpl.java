@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import br.univel.interfaceseClassesAbstratas.SqlGen;
 
 public class SqlGenImpl extends SqlGen {
+	
 
 	@Override
 	protected String getCreateTable(Connection con, Object obj) {

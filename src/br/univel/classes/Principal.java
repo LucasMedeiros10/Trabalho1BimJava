@@ -33,10 +33,12 @@ public class Principal {
 		DaoImpl d = new DaoImpl();
 		
 		
+		//chamar métodos
 		System.out.println("apagarTabela");
+		d.apagarTabela(c1);
 		
 		System.out.println("criarTabela");
-		
+		d.criarTabela(c1);
 		
 		System.out.println("inserir objeto 1");
 		d.salvar(c1);
