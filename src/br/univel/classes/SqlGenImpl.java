@@ -3,6 +3,7 @@ package br.univel.classes;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.management.RuntimeErrorException;
 
@@ -104,7 +105,6 @@ public class SqlGenImpl extends SqlGen {
 			
 			sb.append("\n);");
 			
-			System.out.println(sb.toString());			
 			return sb.toString();
 
 		} catch (SecurityException e) {
@@ -131,7 +131,6 @@ public class SqlGenImpl extends SqlGen {
 			}
 			sb.append("DROP TABLE ").append(nomeTabela).append(";");
 
-			System.out.println(sb.toString());
 			return sb.toString();
 		}catch(SecurityException e){
 			throw new RuntimeException(e);
@@ -143,6 +142,8 @@ public class SqlGenImpl extends SqlGen {
 		Class<? extends Object> cl = obj.getClass();
 
 		StringBuilder sb = new StringBuilder();
+		PreparedStatement ps = null;
+
 
 		//nome da tabela
 		String nomeTabela;
@@ -194,15 +195,23 @@ public class SqlGenImpl extends SqlGen {
 		}
 		sb.append(')');
 
-		System.out.println(sb.toString());
-		return null;
+		try {				
+			ps =  con.prepareStatement(sb.toString());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		return ps;
 
 	}
 
 	@Override
 	protected PreparedStatement getSqlSelectAll(Connection con, Object obj) {
+		PreparedStatement ps = null;
+		
 		try{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();			
 			
 			// Declaração da tabela.
 			String nomeTabela;
@@ -215,19 +224,26 @@ public class SqlGenImpl extends SqlGen {
 				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
 	
 			}
-			sb.append("SELECT * FROM ").append(nomeTabela);
-	
-			System.out.println(sb.toString());
-			return null;			
-		
+			sb.append("SELECT * FROM ").append(nomeTabela);		
+
+			try {				
+				ps =  con.prepareStatement(sb.toString());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			
+			return ps;			
+			
 		}catch(SecurityException e){
 			throw new RuntimeException(e);
-		}						
-
+		}					
 	}
 
 	@Override
 	protected PreparedStatement getSqlSelectById(Connection con, Object obj) {
+		PreparedStatement ps = null;
+		
 		try{
 			StringBuilder sb = new StringBuilder();
 			
@@ -267,8 +283,14 @@ public class SqlGenImpl extends SqlGen {
 			
 			sb.append("SELECT * FROM ").append(nomeTabela).append(" WHERE ").append(ChavePrimaria).append(" = ?");
 	
-			System.out.println(sb.toString());
-			return null;			
+			try {				
+				ps =  con.prepareStatement(sb.toString());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			
+			return ps;	
 		
 		}catch(SecurityException e){
 			throw new RuntimeException(e);
@@ -280,6 +302,7 @@ public class SqlGenImpl extends SqlGen {
 		Class<? extends Object> cl = obj.getClass();
 
 		StringBuilder sb = new StringBuilder();
+		PreparedStatement ps = null;
 
 		//nome da tabela
 		String nomeTabela;
@@ -293,12 +316,12 @@ public class SqlGenImpl extends SqlGen {
 		sb.append("UPDATE ").append(nomeTabela).append(" SET \n");
 
 		Field[] atributos = cl.getDeclaredFields();
+		String chavePrimaria = "";
 
 		// nome dos campos
 		for (int i = 0; i < atributos.length; i++) {
 
 			Field field = atributos[i];
-
 			String nomeColuna;
 
 			if (field.isAnnotationPresent(Coluna.class)) {
@@ -310,24 +333,41 @@ public class SqlGenImpl extends SqlGen {
 					nomeColuna = anotacaoColuna.nome();
 				}
 
+				if(anotacaoColuna.pk()){
+					chavePrimaria = nomeColuna;
+				}
+				
 			} else {
 				nomeColuna = field.getName().toUpperCase();
 			}
 
-			if (i > 0) {
-				sb.append(", \n");
-			}
 
-			sb.append(nomeColuna).append(" = ?");
+			//se for chave primária não escreve no update
+			if (nomeColuna != chavePrimaria){				
+				sb.append("  ").append(nomeColuna).append(" = ?");
+				
+				if (i < atributos.length -1) {
+					sb.append(", \n");
+				}				
+			}
 		}
 
+		sb.append("\n WHERE \n  ").append(chavePrimaria).append(" = ?");
 
-		System.out.println(sb.toString());
-		return null;
+		try {				
+			ps =  con.prepareStatement(sb.toString());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		return ps;
 	}
 
 	@Override
 	protected PreparedStatement getSqlDeleteById(Connection con, Object obj) {
+		
+		PreparedStatement ps = null;
 		try{
 			StringBuilder sb = new StringBuilder();
 			
@@ -366,14 +406,19 @@ public class SqlGenImpl extends SqlGen {
 			}
 			
 			sb.append("DELETE FROM ").append(nomeTabela).append(" WHERE ").append(ChavePrimaria).append(" = ?");
-	
-			System.out.println(sb.toString());
-			return null;			
+			
+			try {				
+				ps =  con.prepareStatement(sb.toString());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
 		
 		}catch(SecurityException e){
 			throw new RuntimeException(e);
-		}				
-
+		}			
+		
+		return ps;	
 	}
 
 }
