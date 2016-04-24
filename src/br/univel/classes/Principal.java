@@ -19,7 +19,7 @@ public class Principal {
 		c2.setId(2);
 		c2.setNome("Matheus");
 		c2.setTelefone("4599888234");
-		c2.setEstadoCivil(EstadoCivil.CASADO);
+		c2.setEstadoCivil(EstadoCivil.SOLTEIRO);
 		c2.setEndereco("Rua ABC, 123");
 
 		Cliente c3 = new Cliente();
@@ -39,37 +39,53 @@ public class Principal {
 			e.printStackTrace();
 		}
 		
+		
+		
 		//chamar métodos
-		System.out.println("apagarTabela");
+		System.out.println("apagarTabela\n");
 		d.apagarTabela(c1);
 		
-		System.out.println("criarTabela");
+		System.out.println("criarTabela\n");
 		d.criarTabela(c1);
 		
-		System.out.println("inserir objeto 1");
+		System.out.println("inserir objeto 1\n");
 		d.salvar(c1);
 		
-		System.out.println("inserir objeto 2");
+		System.out.println("inserir objeto 2\n");
 		d.salvar(c2);
 		
-		System.out.println("inserir objeto 3");
+		System.out.println("inserir objeto 3\n");
 		d.salvar(c3);
 		
 		System.out.println("listarTodos");
-		d.listarTodos();
+		for(Cliente c : d.listarTodos()){
+			System.out.println(c.getId() + " - " + c.getNome() + " - " + c.getEndereco() + " - " + 
+							   c.getTelefone() + " - " + c.getEstadoCivil().toString());			
+		}
 		
-		System.out.println("buscar objeto 1");
-		d.buscar(c1.getId());
 		
-		System.out.println("alterar objeto 2");
+		System.out.println("\nbuscar objeto 1");
+		Cliente c4 = new Cliente();
+		c4 = d.buscar(c1.getId());		
+		System.out.println(c4.getId() + " - " + c4.getNome() + " - " + c4.getEndereco() + " - " + 
+						   c4.getTelefone() + " - " + c4.getEstadoCivil().toString());			
+
+		
+		System.out.println("\nalterar objeto 2\n");
+		c2.setEstadoCivil(EstadoCivil.CASADO);
 		d.atualizar(c2);
 		
-		System.out.println("excluir objeto 3");
+		System.out.println("excluir objeto 3\n");
 		d.excluir(c3.getId());
 		
-		System.out.println("listarTodos");
-		d.listarTodos();
+		System.out.println("listarTodos");		
+		for(Cliente c : d.listarTodos()){
+			System.out.println(c.getId() + " - " + c.getNome() + " - " + c.getEndereco() + " - " + 
+							   c.getTelefone() + " - " + c.getEstadoCivil().toString());			
+		}
 		
+		
+		//fecha a conexão
 		try {
 			d.fecharConexao();
 		} catch (SQLException e) {
