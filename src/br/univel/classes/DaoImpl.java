@@ -123,7 +123,7 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 				c.setNome(resultados.getString("cli_nome"));
 				c.setEndereco(resultados.getString("cli_endereco"));
 				c.setTelefone(resultados.getString("cli_fone"));
-				c.setEstadoCivil(EstadoCivil.valueOf(resultados.getString("cli_estcivil")));
+				c.setEstadoCivil(resultados.getInt("cli_estcivil"));
 				
 				listaCliente.add(c);
 			}			
@@ -175,6 +175,12 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 		String url = "jdbc:mysql://localhost/trabalho";
 		String user = "root";
 		String pass = "123";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		con = DriverManager.getConnection(url, user, pass);
 
 	}	
