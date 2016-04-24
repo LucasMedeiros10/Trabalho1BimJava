@@ -2,9 +2,11 @@ package br.univel.classes;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import br.univel.enums.EstadoCivil;
 import br.univel.interfaceseClassesAbstratas.Dao;
 
 public class DaoImpl implements Dao<Cliente, Integer> {
@@ -37,8 +39,30 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	@Override
 	public Cliente buscar(Integer k) {
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getSqlSelectById(con, new Cliente());
-		return null;
+		Cliente c = new Cliente();
+				
+		try {
+
+			PreparedStatement ps = gerador.getSqlSelectById(con, new Cliente());
+			ps.setInt(1, k);
+			ResultSet resultados = ps.executeQuery();
+			
+			while (resultados.next()) {
+				c.setId(resultados.getInt("cli_codigo"));
+				c.setNome(resultados.getString("cli_nome"));
+				c.setEndereco(resultados.getString("cli_endereco"));
+				c.setTelefone(resultados.getString("cli_fone"));
+				c.setEstadoCivil(EstadoCivil.valueOf(resultados.getString("cli_estcivil")));
+			}			
+			
+			ps.close();
+			resultados.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}				
+		
+		return c;
 	}
 
 	@Override
@@ -83,19 +107,60 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	@Override
 	public List<Cliente> listarTodos() {
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getSqlSelectAll(con, new Cliente());
-		return null;
+		Cliente c = new Cliente();
+		
+		try {
+
+			PreparedStatement ps = gerador.getSqlSelectAll(con, new Cliente());
+			ResultSet resultados = ps.executeQuery();
+			
+			while (resultados.next()) {
+				c.setId(resultados.getInt("cli_codigo"));
+				c.setNome(resultados.getString("cli_nome"));
+				c.setEndereco(resultados.getString("cli_endereco"));
+				c.setTelefone(resultados.getString("cli_fone"));
+				c.setEstadoCivil(EstadoCivil.valueOf(resultados.getString("cli_estcivil")));
+			}			
+			
+			ps.close();
+			resultados.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}				
+		
+		return c;		
 	}
 
 	public void criarTabela(Cliente t){
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getCreateTable(con, t);
+		
+		try {
+			String sql = gerador.getCreateTable(con, t);	
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}			
 		
 	}
 	
 	public void apagarTabela(Cliente t){
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getDropTable(con, t);		
+				
+		try {
+			String sql = gerador.getDropTable(con, t);	
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}			
 		
 	}	
 }
