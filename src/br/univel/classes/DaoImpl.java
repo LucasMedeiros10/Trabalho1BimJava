@@ -1,6 +1,8 @@
 package br.univel.classes;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import br.univel.interfaceseClassesAbstratas.Dao;
@@ -13,8 +15,23 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	@Override
 	public void salvar(Cliente t) {
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getSqlInsert(con, t);
 		
+		try {
+
+			PreparedStatement ps = gerador.getSqlInsert(con, t);
+			ps.setInt(1, t.getId());
+			ps.setString(2, t.getNome());
+			ps.setString(3, t.getEndereco());
+			ps.setString(4, t.getTelefone());
+			ps.setInt(5, t.getEstadoCivil().ordinal());
+			
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}			
 	}
 
 	@Override
@@ -27,13 +44,40 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	@Override
 	public void atualizar(Cliente t) {
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getSqlUpdateById(con, t);	
+			
+		try {
+
+			PreparedStatement ps = gerador.getSqlUpdateById(con, t);
+			ps.setString(1, t.getNome());
+			ps.setString(2, t.getEndereco());
+			ps.setString(3, t.getTelefone());
+			ps.setInt(4, t.getEstadoCivil().ordinal());
+			ps.setInt(5, t.getId());
+			
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}		
 	}
 
 	@Override
 	public void excluir(Integer k) {
 		SqlGenImpl gerador = new SqlGenImpl();
-		gerador.getSqlDeleteById(con, new Cliente());
+				
+		try {
+
+			PreparedStatement ps = gerador.getSqlDeleteById(con, new Cliente());
+			ps.setInt(1, k);
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}		
 	}
 
 	@Override

@@ -22,82 +22,79 @@ public class SqlGenImpl extends SqlGen {
 
 			StringBuilder sb = new StringBuilder();
 
-			// Declaração da tabela.
-			{
-				String nomeTabela;
-				if (obj.getClass().isAnnotationPresent(Tabela.class)) {
+			// Declaração da tabela.	
+			String nomeTabela;
+			if (obj.getClass().isAnnotationPresent(Tabela.class)) {
 
-					Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
-					nomeTabela = anotacaoTabela.value();
+				Tabela anotacaoTabela = obj.getClass().getAnnotation(Tabela.class);
+				nomeTabela = anotacaoTabela.value();
 
-				} else {
-					nomeTabela = obj.getClass().getSimpleName().toUpperCase();
+			} else {
+				nomeTabela = obj.getClass().getSimpleName().toUpperCase();
 
-				}
-				sb.append("CREATE TABLE ").append(nomeTabela).append(" (");
 			}
+			sb.append("CREATE TABLE ").append(nomeTabela).append(" (");
+			
 			
 			Field[] atributos = obj.getClass().getDeclaredFields();
 			
 			String ChavePrimaria = "";
 
 			// Declaração das colunas
-			{
-				for (int i = 0; i < atributos.length; i++) {
+			for (int i = 0; i < atributos.length; i++) {
 
-					Field field = atributos[i];
+				Field field = atributos[i];
 
-					String nomeColuna;
-					String tipoColuna;
-					int    tamanhoColuna = 0;
+				String nomeColuna;
+				String tipoColuna;
+				int    tamanhoColuna = 0;
 
-					//nome coluna
-					if (field.isAnnotationPresent(Coluna.class)) {
-						Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
+				//nome coluna
+				if (field.isAnnotationPresent(Coluna.class)) {
+					Coluna anotacaoColuna = field.getAnnotation(Coluna.class);
 
-						if (anotacaoColuna.nome().isEmpty()) {
-							nomeColuna = field.getName().toUpperCase();
-							tamanhoColuna = 0;
-						} else {
-							nomeColuna = anotacaoColuna.nome();
-							tamanhoColuna = anotacaoColuna.tamanho();
-							
-							//verifica se é chave primária
-							if(anotacaoColuna.pk()){
-								if (ChavePrimaria.equalsIgnoreCase("")){
-									ChavePrimaria = anotacaoColuna.nome();
-								}else{
-									ChavePrimaria = ChavePrimaria + ", " + anotacaoColuna.nome();
-								}
-								
-							}
-						}
-
-					} else {
+					if (anotacaoColuna.nome().isEmpty()) {
 						nomeColuna = field.getName().toUpperCase();
+						tamanhoColuna = 0;
+					} else {
+						nomeColuna = anotacaoColuna.nome();
+						tamanhoColuna = anotacaoColuna.tamanho();
+						
+						//verifica se é chave primária
+						if(anotacaoColuna.pk()){
+							if (ChavePrimaria.equalsIgnoreCase("")){
+								ChavePrimaria = anotacaoColuna.nome();
+							}else{
+								ChavePrimaria = ChavePrimaria + ", " + anotacaoColuna.nome();
+							}
+							
+						}
 					}
 
-					//tipo coluna
-					Class<?> tipoParametro = field.getType();
-
-					if (tipoParametro.equals(String.class)) {
-						tipoColuna = "VARCHAR("  + tamanhoColuna + ")";
-
-					} else if (tipoParametro.equals(int.class)) {
-						tipoColuna = "INT";
-					} else if (tipoParametro.equals(EstadoCivil.class)) {
-						tipoColuna = "INT";
-					} else {
-						tipoColuna = "DESCONHECIDO";
-					}							
-					
-					if (i > 0) {
-						sb.append(",");
-					}										
-
-					sb.append("\n\t").append(nomeColuna).append(' ').append(tipoColuna);
+				} else {
+					nomeColuna = field.getName().toUpperCase();
 				}
-			}			
+
+				//tipo coluna
+				Class<?> tipoParametro = field.getType();
+
+				if (tipoParametro.equals(String.class)) {
+					tipoColuna = "VARCHAR("  + tamanhoColuna + ")";
+
+				} else if (tipoParametro.equals(int.class)) {
+					tipoColuna = "INT";
+				} else if (tipoParametro.equals(EstadoCivil.class)) {
+					tipoColuna = "INT";
+				} else {
+					tipoColuna = "DESCONHECIDO";
+				}							
+				
+				if (i > 0) {
+					sb.append(",");
+				}										
+
+				sb.append("\n\t").append(nomeColuna).append(' ').append(tipoColuna);
+			}
 
 			if (ChavePrimaria != ""){
 				sb.append(",\n\t PRIMARY KEY(" + ChavePrimaria + ")");
