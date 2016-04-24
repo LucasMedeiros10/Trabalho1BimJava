@@ -1,9 +1,11 @@
 package br.univel.classes;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.univel.enums.EstadoCivil;
@@ -12,7 +14,8 @@ import br.univel.interfaceseClassesAbstratas.Dao;
 public class DaoImpl implements Dao<Cliente, Integer> {
 
 
-	Connection con = new Conexao();
+	Connection con;
+	
 	
 	@Override
 	public void salvar(Cliente t) {
@@ -107,7 +110,7 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 	@Override
 	public List<Cliente> listarTodos() {
 		SqlGenImpl gerador = new SqlGenImpl();
-		Cliente c = new Cliente();
+		List<Cliente> listaCliente = new ArrayList<Cliente>();
 		
 		try {
 
@@ -115,11 +118,14 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 			ResultSet resultados = ps.executeQuery();
 			
 			while (resultados.next()) {
+				Cliente c = new Cliente();
 				c.setId(resultados.getInt("cli_codigo"));
 				c.setNome(resultados.getString("cli_nome"));
 				c.setEndereco(resultados.getString("cli_endereco"));
 				c.setTelefone(resultados.getString("cli_fone"));
 				c.setEstadoCivil(EstadoCivil.valueOf(resultados.getString("cli_estcivil")));
+				
+				listaCliente.add(c);
 			}			
 			
 			ps.close();
@@ -129,7 +135,7 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 			e.printStackTrace();
 		}				
 		
-		return c;		
+		return listaCliente;		
 	}
 
 	public void criarTabela(Cliente t){
@@ -163,4 +169,18 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 		}			
 		
 	}	
+	
+	public void abrirConexao() throws SQLException {
+
+		String url = "jdbc:mysql://localhost/trabalho";
+		String user = "root";
+		String pass = "123";
+		con = DriverManager.getConnection(url, user, pass);
+
+	}	
+	
+	public void fecharConexao() throws SQLException {
+		con.close();
+	}
+	
 }

@@ -1,5 +1,7 @@
 package br.univel.classes;
 
+import java.sql.SQLException;
+
 import br.univel.enums.EstadoCivil;
 
 public class Principal {
@@ -29,7 +31,13 @@ public class Principal {
 		
 		//instancia Dao
 		DaoImpl d = new DaoImpl();
-		
+		try {
+			d.abrirConexao();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Falha ao conectar no banco de dados.");
+			e.printStackTrace();
+		}
 		
 		//chamar métodos
 		System.out.println("apagarTabela");
@@ -60,7 +68,14 @@ public class Principal {
 		d.excluir(c3.getId());
 		
 		System.out.println("listarTodos");
-		d.listarTodos();		
+		d.listarTodos();
+		
+		try {
+			d.fecharConexao();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
