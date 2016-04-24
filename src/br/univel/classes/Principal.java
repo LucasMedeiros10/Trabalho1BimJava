@@ -29,16 +29,19 @@ public class Principal {
 		c3.setEstadoCivil(EstadoCivil.SOLTEIRO);
 		c3.setEndereco("Rua das Araras, 56");
 		
+		Conexao conexao = new Conexao();
+		
+		
 		//instancia Dao
 		DaoImpl d = new DaoImpl();
+		
+		//seta conexão
 		try {
-			d.abrirConexao();
+			d.setCon(conexao.abrirConexao());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("Falha ao conectar no banco de dados.");
 			e.printStackTrace();
 		}
-		
 		
 		
 		//chamar métodos
@@ -86,8 +89,9 @@ public class Principal {
 		
 		
 		//fecha a conexão
+		d.setCon(null);
 		try {
-			d.fecharConexao();
+			conexao.fecharConexao();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

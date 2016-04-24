@@ -1,7 +1,6 @@
 package br.univel.classes;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,9 +13,17 @@ import br.univel.interfaceseClassesAbstratas.Dao;
 public class DaoImpl implements Dao<Cliente, Integer> {
 
 
-	Connection con;
+	private Connection con = null;
 	
 	
+	public Connection getCon() {
+		return con;
+	}
+
+	public void setCon(Connection con) {
+		this.con = con;
+	}
+
 	@Override
 	public void salvar(Cliente t) {
 		SqlGenImpl gerador = new SqlGenImpl();
@@ -171,23 +178,5 @@ public class DaoImpl implements Dao<Cliente, Integer> {
 		
 	}	
 	
-	public void abrirConexao() throws SQLException {
-
-		String url = "jdbc:mysql://localhost/trabalho";
-		String user = "root";
-		String pass = "123";
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		con = DriverManager.getConnection(url, user, pass);
-
-	}	
-	
-	public void fecharConexao() throws SQLException {
-		con.close();
-	}
 	
 }
